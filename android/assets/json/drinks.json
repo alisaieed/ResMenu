@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "name": "Mojito",
+    "title": "Mojito",
+    "category" : "Drinks",
+    "price": "2.00",
+    "imageUrl": [
+      "https://i.postimg.cc/05wSNsn5/Mojito-1.jpg",
+      "https://i.postimg.cc/zvKH2CvH/Mojito-2.jpg"
+    ],
+    "components": ["White rum", "Sugar", "Lime juice", "Soda water", "Mint"],
+    "description": "A traditional Cuban highball.",
+    "options": ["Extra mint", "Less sugar", "No alcohol"]
+  },
+  {
+    "id": "2",
+    "name": "Coffee",
+    "title": "Coffee",
+    "category" : "Drinks",
+    "price": "3.00",
+    "imageUrl": [
+      "https://i.postimg.cc/HxQTfB0m/Coffee-1.jpg",
+      "https://i.postimg.cc/Jnw169kK/Coffee-2.jpg"
+    ],
+    "components": ["Coffee beans", "Water"],
+    "description": "A brewed drink prepared from roasted coffee beans, the seeds of berries from certain Coffee species.",
+    "options": ["With milk", "Extra sugar", "Decaf"]
+  }
+]

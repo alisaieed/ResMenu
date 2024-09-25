@@ -1,0 +1,31 @@
+[
+  {
+    "id": "1",
+    "name": "Hamburger",
+    "imageUrl": [
+      "https://i.postimg.cc/66gNYVLp/burger-1.png",
+      "https://i.postimg.cc/zvsZv5Xg/burger-2.png"
+    ],
+    "title": "Hamburger",
+    "category" : "Western Meals",
+    "price": "25.00",
+    "components": ["Bun", "Beef patty", "Lettuce", "Tomato", "Onion", "Pickles"],
+    "description": "A sandwich consisting of one or more cooked patties of ground meat, usually beef, placed inside a sliced bread roll or bun.",
+    "options": ["With cheese", "Extra bacon", "No pickles"]
+  },
+  {
+    "id": "2",
+    "name": "Chicken Pot Pie",
+    "category" : "Western Meals",
+    "price": "35.00",
+    "imageUrl": [
+      "https://i.postimg.cc/FzBcJW2c/Chicken-Pot-Pie-1.jpg",
+      "https://i.postimg.cc/vBX5GHh0/Chicken-Pot-Pie-2.jpg",
+      "https://i.postimg.cc/NGJRVF5M/Chicken-Pot-Pie-3.jpg"
+    ],
+    "title": "Chicken Pot Pie",
+    "components": ["Chicken", "Vegetables", "Cream sauce", "Pie crust"],
+    "description": "A type of baked savory pie with a bottom and top completely encased by flaky crusts and baked inside a pie tin to support its shape.",
+    "options": ["With mushrooms", "Extra chicken", "Gluten-free crust"]
+  }
+]

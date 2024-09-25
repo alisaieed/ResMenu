@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "501233429619",
+    "project_id": "restautant-menu-app-ali",
+    "storage_bucket": "restautant-menu-app-ali.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:501233429619:android:b6f9863ee875cfb1280e06",
+        "android_client_info": {
+          "package_name": "com.ali.ecommerce.ecommerce_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByGR_CLpJHfefbCgP3d1dnYTQpG9zPpeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

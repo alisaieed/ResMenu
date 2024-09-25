@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "name": "Sushi",
+    "title": "Sushi",
+    "category" : "Eastern Meals",
+    "price": "30.00",
+    "imageUrl": [
+      "https://i.postimg.cc/HxFgmHFf/sushi-1.png",
+      "https://i.postimg.cc/gjRPkQWr/sushi-2.png"
+    ],
+    "components": ["Rice", "Fish", "Seaweed"],
+    "description": "A traditional Japanese dish of prepared vinegared rice, usually with some sugar and salt, accompanying a variety of ingredients, such as seafood, often raw, and vegetables.",
+    "options": ["With wasabi", "Extra ginger", "No soy sauce"]
+  },
+  {
+    "id": "2",
+    "name": "Pad Thai",
+    "title": "Pad Thai",
+    "category" : "Eastern Meals",
+    "price": "25.00",
+    "imageUrl": [
+      "https://i.postimg.cc/ZqpYcLcW/meal1.png",
+      "https://i.postimg.cc/xCQfFbxt/meal2.png"
+    ],
+    "components": ["Rice noodles", "Eggs", "Tofu", "Bean sprouts", "Peanuts", "Lime", "Chili pepper"],
+    "description": "A stir-fried rice noodle dish commonly served as a street food and at most restaurants in Thailand.",
+    "options": ["With shrimp", "Extra spicy", "No peanuts"]
+  }
+]
