@@ -1,4 +1,4 @@
-# ecommerce_app
+# Res. Menu
 
 A new Flutter project.
 
