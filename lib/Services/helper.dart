@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:ecommerce_app/Models/meal_model.dart';
 import 'package:flutter/services.dart' as the_bundle;
 import 'package:http/http.dart' as http;
@@ -9,7 +11,39 @@ import '../Models/order_model.dart';
 
 class Helper {
 
+  Future<int> mealIdGenerate(String category, Locale langCode) async {
+    if (langCode.toString() == 'en'){
+      try {
+        CollectionReference mealsCollection = FirebaseFirestore.instance
+            .collection('Meals_en')
+            .doc(category)
+            .collection('Meals');
 
+        QuerySnapshot snapshot = await mealsCollection.get();
+
+        return snapshot.docs.length+1;
+      } catch (e) {
+        print("Error fetching document count: $e");
+        return 0;
+      }
+    } else {
+      try {
+        CollectionReference mealsCollection = FirebaseFirestore.instance
+            .collection('Meals_ar')
+            .doc(category)
+            .collection('Meals');
+
+        // Get the documents in the 'Meals' collection
+        QuerySnapshot snapshot = await mealsCollection.get();
+
+        // Return the count of documents
+        return snapshot.docs.length+1;
+      } catch (e) {
+        print("Error fetching document count: $e");
+        return 0;
+      }
+    }
+  }
 
   Future<List<Order>> getOrdersOnline() async {
     final response = await http.get(Uri.parse("https://api.jsonstorage.net/v1/json/364f3b43-bdf4-4f5b-ba0d-2b5f53556929/3aa36377-36a9-4cc1-b59e-f38bd3b39e5c"));

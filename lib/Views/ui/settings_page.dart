@@ -1,4 +1,8 @@
+import 'package:ecommerce_app/Views/ui/add_category.dart';
 import 'package:ecommerce_app/Views/ui/add_meal.dart';
+import 'package:ecommerce_app/Views/ui/delete_category.dart';
+import 'package:ecommerce_app/Views/ui/delete_meal.dart';
+import 'package:ecommerce_app/Views/ui/edit_meal.dart';
 import 'package:flutter/material.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -8,11 +12,9 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPageState();
 }
 
-List<String> options = ["Add Category", "Add Meal", "Edit Meal",];
-
 class _SettingsPageState extends State<SettingsPage> {
 
-  List<String> settingsOptions = ['Add Meal', 'Add Category', 'Edit Meal'];
+  List<String> settingsOptions = ['Add Meal', 'Add Category','Delete Meal','Delete Category', 'Edit Meal'];
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
       backgroundColor: const Color(0xFFE2E2E2),
       appBar: AppBar(
         backgroundColor: const Color(0xFFE2E2E2),
-        title: Center(child: Text('Settings Page')),
+        title: const Center(child: Text('Dashboard')),
       ),
       body: ListView.builder(
         itemCount: settingsOptions.length,
@@ -37,6 +39,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 if (index == 0){
                   Navigator.push(context, MaterialPageRoute(
                       builder: (context) => AddMealPage(),));
+                }
+                else if (index == 1){
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => AddCategoryPage(),));
+                }
+                else if (index == 2){
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => DeleteMealPage(),));
+                }
+                else if (index == 3){
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => DeleteCategoryPage(),));
+                }
+                else if (index == 4){
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) => EditMealPage(),));
                 }
               },
               child: Text(settingsOptions[index],

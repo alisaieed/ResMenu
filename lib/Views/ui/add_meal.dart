@@ -1,7 +1,14 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ecommerce_app/Services/firestore_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:provider/provider.dart';
+
+import '../../Controllers/meals_provider.dart';
+import '../../Services/helper.dart';
 
 class AddMealPage extends StatefulWidget {
   const AddMealPage({super.key});
@@ -25,6 +32,9 @@ class _AddMealPageState extends State<AddMealPage> {
     });
   }
 
+  bool _isLoading = false;
+  Helper helper = Helper();
+
   Future<void> uploadImages() async {
     for (var image in _images!) {
       final File file = File(image.path);
@@ -32,17 +42,6 @@ class _AddMealPageState extends State<AddMealPage> {
         await _storage.ref('uploads/${Uri.file(image.path).pathSegments.last}').putFile(file);
         String downloadURL = await _storage.ref('uploads/${Uri.file(image.path).pathSegments.last}').getDownloadURL();
         print(downloadURL);
-      } on firebase_storage.FirebaseException catch (e) {
-        print(e);
-      }
-    }
-  }
-  Future<void> getDownloadURLs() async {
-    for (var image in _images!) {
-      final File file = File(image.path);
-      try {
-        String downloadURL =
-        await _storage.ref('Upload/${Uri.file(image.path).pathSegments.last}').getDownloadURL();
         imageUrl.add(downloadURL);
       } on firebase_storage.FirebaseException catch (e) {
         print(e);
@@ -50,6 +49,7 @@ class _AddMealPageState extends State<AddMealPage> {
     }
   }
 
+  String id = '';
   String name = '';
   String title = '';
   String category = '';
@@ -62,7 +62,20 @@ class _AddMealPageState extends State<AddMealPage> {
   final List<TextEditingController> _componentsControllers = [];
 
   @override
+  void initState() {
+    super.initState();
+    FireStoreHelper fireStoreHelper = FireStoreHelper();
+    fireStoreHelper.getAllCategories(context);
+
+    var mealsNotifier = Provider.of<MealNotifier>(context, listen: false);
+    category =  mealsNotifier.categoriesList[0];
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    var mealsNotifier = Provider.of<MealNotifier>(context);
+    Locale locale = Localizations.localeOf(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFE2E2E2),
@@ -86,7 +99,11 @@ class _AddMealPageState extends State<AddMealPage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
+      body: _isLoading? const Center(
+        child: CircularProgressIndicator(),
+      )
+
+    : SingleChildScrollView(
         child: Form(
           key: _formKey,
           child: Padding(
@@ -112,18 +129,29 @@ class _AddMealPageState extends State<AddMealPage> {
                     });
                   },
                 ),
-                TextFormField(
-                  initialValue: title,
+                DropdownButtonFormField<String>(
+                  value: mealsNotifier.categoriesList[0],
                   decoration: const InputDecoration(labelText: 'Category'),
-                  onChanged: (value) {
+                  items: mealsNotifier.categoriesList.map((String category) {
+                    return DropdownMenuItem<String>(
+                      value: category,
+                      child: Text(category),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
                     setState(() {
-                      category = value;
+                      category = value!;
+                      print(category);
                     });
                   },
                 ),
                 TextFormField(
                   initialValue: price,
                   decoration: const InputDecoration(labelText: 'Price'),
+                  keyboardType: TextInputType.number, // Set keyboard type to number
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly, // Allow only digits
+                  ],
                   onChanged: (value) {
                     setState(() {
                       price = value;
@@ -299,18 +327,20 @@ class _AddMealPageState extends State<AddMealPage> {
                     )
                     : Container(),
 
-                TextButton(
-                  onPressed: uploadImages,
-                  child: Text('Upload Images'),
-                ),
 
                 ElevatedButton(
                   style: ButtonStyle(
                       overlayColor: WidgetStateProperty.all(Colors.white70),
                       backgroundColor: WidgetStateProperty.all(Colors.white60)
                   ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
+                  onPressed: () async {
+                    print(category);
+                    setState(() {
+                      _isLoading = true;
+                    });
+                   if (_images != null) {
+                   await  uploadImages();
+                   }
 
                       for (TextEditingController controller in _componentsControllers) {
                         components.add(controller.text);
@@ -319,16 +349,50 @@ class _AddMealPageState extends State<AddMealPage> {
                       for (TextEditingController controller in _optionsControllers) {
                         options.add(controller.text);
                       }
-
-                   print("$name, $category, $price\n$options\n$components\n$imageUrl");
-
-                      Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => const AddMealPage()));
-
+                    print(imageUrl);
+                    if (name.isEmpty || price.isEmpty || components.isEmpty ||
+                          options.isEmpty || description.isEmpty || imageUrl.isEmpty) {
+                      print("$locale , $id, $name,$title, $category, $price\n$options\n$components\n$imageUrl");
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Missing Information'),
+                              content: const Text('Please fill in all the required fields.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('OK'),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      setState(() {
+                        _isLoading = false;
+                      });
                     }
-                  },
-                  child: const Text('Submit',
+                      else {
+                       int _id = await helper.mealIdGenerate(category, locale);
+                       id = _id.toString();
+                          print("$locale , $id, $name,$title, $category, $price\n$options\n$components\n$imageUrl");
+
+
+                          FireStoreHelper fireStoreHelper = FireStoreHelper();
+                          fireStoreHelper.addMeal(
+                              context,locale.toString(),category, id,name,title,description,imageUrl, options, components, price
+                          );
+
+                          setState(() {
+                            _isLoading = false;
+                          });
+
+                        }
+                      }
+                  // },
+                  ,child: const Text('Submit',
                       style: TextStyle(color: Colors.black87)),
                 ),
               ],

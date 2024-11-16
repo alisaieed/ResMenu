@@ -72,4 +72,6 @@ flutter {
 
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'com.google.firebase:firebase-auth:4.16.0'
+    implementation 'com.google.firebase:firebase-firestore:4.14.0'
 }
