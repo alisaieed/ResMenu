@@ -8,10 +8,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
-
-
 class MealCard extends StatefulWidget {
-   const MealCard({super.key, required this.price, required this.category, required this.id, required this.name, required this.image, required this.components});
+  const MealCard(
+      {super.key,
+      required this.price,
+      required this.category,
+      required this.id,
+      required this.name,
+      required this.image,
+      required this.components});
 
   final String price;
   final String category;
@@ -20,8 +25,6 @@ class MealCard extends StatefulWidget {
   final String image;
   final List<dynamic> components;
 
-
-
   @override
   State<MealCard> createState() => _MealCardState();
 }
@@ -29,91 +32,113 @@ class MealCard extends StatefulWidget {
 class _MealCardState extends State<MealCard> {
 
 
+  bool isTablet(BuildContext context) {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    return shortestSide >= 600;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  Padding(
-        padding:  EdgeInsets.fromLTRB(8.w, 0.h, 20.w, 0.h),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(8.w, 0.h, isTablet(context)?10:20.w, 0.h),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(16)),
         child: Container(
           height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width*0.6,
-          decoration: const BoxDecoration(
-            boxShadow: [
-              BoxShadow(
+          width: MediaQuery.of(context).size.width * (isTablet(context) ? 0.3 : 0.6),          decoration: const BoxDecoration(boxShadow: [
+            BoxShadow(
                 color: Colors.white,
                 spreadRadius: 1,
                 blurRadius: 0.6,
-                offset: Offset(1,1)
-              )
-            ]
-          ),
+                offset: Offset(1, 1))
+          ]),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Stack(
                 children: [
                   Container(
-                    height:MediaQuery.of(context).size.height*0.21,
+                    height: MediaQuery.of(context).size.height * 0.21,
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.scaleDown,
-                       image:  CachedNetworkImageProvider(widget.image,)
-                      )
-                    ),
+                        image: DecorationImage(
+                            fit: BoxFit.fitHeight,
+                            image: CachedNetworkImageProvider(
+                              widget.image,
+                            ))),
                   ),
                   Positioned(
-                    top: 10.h,
+                      top: 10.h,
                       right: 10.w,
                       child: Consumer<FavoritesNotifier>(
-                        builder: (context, favoritesNotifier, child){
+                        builder: (context, favoritesNotifier, child) {
                           return GestureDetector(
-                            onTap:
-                                () {
-                              if (favoritesNotifier.ids.contains(widget.id)){
-                                Navigator.push(context, MaterialPageRoute(
-                                    builder: (context) => const Favorites()));
-                              }else {
-                                favoritesNotifier.createFav({
-                                  "id" : widget.id,
-                                  "name": widget.name,
-                                  "category": widget.category,
-                                  "price" : widget.price,
-                                  "imageUrl" : widget.image,
+                            onTap: () {
+                              if (
+                              // favoritesNotifier.ids.contains(widget.id) &&
+                                  favoritesNotifier.names
+                                      .contains(widget.name)) {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const Favorites()));
+                              } else {
+                                setState(() {
+                                  favoritesNotifier.createFav({
+                                    "id": widget.id,
+                                    "name": widget.name,
+                                    "category": widget.category,
+                                    "price": widget.price,
+                                    "imageUrl": widget.image,
+                                  });
                                 });
+
                               }
                             },
-                            child: favoritesNotifier.ids.contains(widget.id)? const Icon(
-                                CupertinoIcons.heart_circle
-                            ) : const Icon(
-                                CupertinoIcons.heart
-                            ),
+                            child:
+                            // favoritesNotifier.ids.contains(widget.id) &&
+                                    favoritesNotifier.names
+                                        .contains(widget.name)
+                                ? const Icon(CupertinoIcons.heart_circle)
+                                : const Icon(CupertinoIcons.heart),
                           );
                         },
-                      )
-                  )
+                      ))
                 ],
               ),
-               Padding(padding:  EdgeInsets.only(left: 8.w, top: 8.h, right: 10.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ReUseAbleText(
-                      text: widget.name, style: appstyleWithHt(18, Colors.black, FontWeight.bold, 1)),
-                  ReUseAbleText(
-                      text: widget.category, style: appstyleWithHt(12, Colors.grey, FontWeight.w600, 1.3)),
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5.h),
-                    child: ReUseAbleText(
-                        text: widget.components.join(", ").toString(), style: appstyleWithHt(12, Colors.grey, FontWeight.w500, 1.5)),
-                  ),
-                ],
-              ),
-               ),
               Padding(
-                  padding: EdgeInsets.only(left: 8.w, right: 8.h),
+                padding: EdgeInsets.only(left: 8.w, top: 8.h, right: 10.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: [
+                    ReUseAbleText(
+                        text: widget.name,
+                        style: appstyleWithHt(
+                            15, Colors.black, FontWeight.bold, 1)),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    ReUseAbleText(
+                        text: widget.category,
+                        style: appstyleWithHt(
+                            8, Colors.grey, FontWeight.w600, 1.3)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 5.h),
+                      child: ReUseAbleText(
+                          text: widget.components.join(", ").toString(),
+                          style: appstyleWithHt(
+                              isTablet(context)?6:12, Colors.grey, FontWeight.w500, 1.5)),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 8.w, right: 8.h),
                 child: ReUseAbleText(
-                  text: widget.price, style: appstyle(14, Colors.black, FontWeight.w600),),
+                  text: widget.price,
+                  style: appstyle(14, Colors.black, FontWeight.w600),
+                ),
               )
             ],
           ),

@@ -48,7 +48,7 @@ class _StaggerTileState extends State<StaggerTile> {
                   ReUseAbleText(
                       text: widget.name,
                   style: appstyleWithHt(
-                      18, Colors.black, FontWeight.w700,1)
+                      15, Colors.black, FontWeight.w700,1)
                   ),
                   SizedBox(
                     height: 10.h,
@@ -56,7 +56,7 @@ class _StaggerTileState extends State<StaggerTile> {
                   ReUseAbleText(
                       text: widget.components,
                       style: appstyleWithHt(
-                          12, Colors.black, FontWeight.w200,1)
+                          8, Colors.black, FontWeight.w200,1)
                   ),
                   SizedBox(
                     height: 10.h,
@@ -66,7 +66,7 @@ class _StaggerTileState extends State<StaggerTile> {
                     child: ReUseAbleText(
                         text: widget.price,
                         style: appstyleWithHt(
-                            14, Colors.black, FontWeight.w500,1)
+                            12, Colors.black, FontWeight.w500,1)
                     ),
                   ),
 

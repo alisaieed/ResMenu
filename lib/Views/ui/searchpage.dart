@@ -161,6 +161,7 @@ class _SearchPageState extends State<SearchPage> {
                                             MaterialPageRoute(
                                                 builder: (context) => MealPage(
                                                     id: meal.id,
+                                                    name: meal.name,
                                                     category: meal.category)));
                                       },
                                       child: ClipRRect(

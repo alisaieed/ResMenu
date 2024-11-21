@@ -16,9 +16,14 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:ecommerce_app/Controllers/mainscreen_provider.dart';
 
 class MealPage extends StatefulWidget {
-  const MealPage({super.key, required this.id, required this.category});
+  const MealPage(
+      {super.key,
+      required this.id,
+      required this.category,
+      required this.name});
 
   final String id;
+  final String name;
   final String category;
 
   @override
@@ -34,6 +39,8 @@ class _MealPageState extends State<MealPage> {
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
+
     var favoritesNotifier =
         Provider.of<FavoritesNotifier>(context, listen: true);
     favoritesNotifier.getFavorites();
@@ -124,8 +131,8 @@ class _MealPageState extends State<MealPage> {
                                         (context, favoritesNotifier, child) {
                                       return GestureDetector(
                                         onTap: () {
-                                          if (favoritesNotifier.ids
-                                              .contains(widget.id)) {
+                                          if (favoritesNotifier.names
+                                              .contains(widget.name)) {
                                             Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -142,8 +149,8 @@ class _MealPageState extends State<MealPage> {
                                           }
                                           setState(() {});
                                         },
-                                        child: favoritesNotifier.ids
-                                                .contains(meal.id)
+                                        child: favoritesNotifier.names
+                                                .contains(meal.name)
                                             ? const Icon(
                                                 CupertinoIcons.heart_circle)
                                             : const Icon(CupertinoIcons.heart),
@@ -283,17 +290,22 @@ class _MealPageState extends State<MealPage> {
                                           ReUseAbleText(
                                             text: AppLocalizations.of(context)!
                                                 .components,
-                                            style: appstyle(16, Colors.black,
+                                            style: appstyle(12, Colors.black,
                                                 FontWeight.w500),
                                           ),
                                           SizedBox(
                                             width: 5.w,
                                           ),
                                           SizedBox(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.540,
+                                            width: locale.languageCode == 'ar'
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.70
+                                                : MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.60,
                                             height: MediaQuery.of(context)
                                                     .size
                                                     .height *
@@ -311,7 +323,7 @@ class _MealPageState extends State<MealPage> {
                                                         text: meal
                                                             .components[index],
                                                         style: appstyle(
-                                                            14,
+                                                            12,
                                                             Colors.black,
                                                             FontWeight.normal)),
                                                   );
@@ -321,7 +333,7 @@ class _MealPageState extends State<MealPage> {
                                                         text:
                                                             "${meal.components[index]}, ",
                                                         style: appstyle(
-                                                            16,
+                                                            12,
                                                             Colors.black,
                                                             FontWeight.normal)),
                                                   );
@@ -332,7 +344,9 @@ class _MealPageState extends State<MealPage> {
                                         ],
                                       ),
                                       SizedBox(
-                                        height: 10.h,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.012,
                                       ),
                                       meal.options!.isNotEmpty
                                           ? Row(
@@ -344,7 +358,7 @@ class _MealPageState extends State<MealPage> {
                                                           context)!
                                                       .options,
                                                   style: appstyle(
-                                                      16,
+                                                      12,
                                                       Colors.black,
                                                       FontWeight.w500),
                                                 ),
@@ -352,10 +366,16 @@ class _MealPageState extends State<MealPage> {
                                                   width: 5.w,
                                                 ),
                                                 SizedBox(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.75,
+                                                  width: locale.languageCode ==
+                                                          'ar'
+                                                      ? MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.75
+                                                      : MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.70,
                                                   height: MediaQuery.of(context)
                                                           .size
                                                           .height *
@@ -396,10 +416,10 @@ class _MealPageState extends State<MealPage> {
                                                                       .shade200
                                                                   : Colors
                                                                       .transparent,
-                                                              border:
-                                                                  Border.all(
-                                                                    color: Colors.black38,
-                                                                      width: 0.5),
+                                                              border: Border.all(
+                                                                  color: Colors
+                                                                      .black38,
+                                                                  width: 0.5),
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(

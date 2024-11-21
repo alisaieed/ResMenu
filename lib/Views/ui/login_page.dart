@@ -95,8 +95,6 @@ class _LoginPageState extends State<LoginPage> {
                         print('Wrong password provided for that user.');
                       }
                     }
-                    print(emailController.text);
-                    print(passwordController.text);
                   },
                 )
             ),

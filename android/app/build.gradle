@@ -74,4 +74,6 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'com.google.firebase:firebase-auth:4.16.0'
     implementation 'com.google.firebase:firebase-firestore:4.14.0'
+    implementation platform('com.google.firebase:firebase-bom:32.2.0')
+    implementation 'com.google.android.gms:play-services-recaptcha:16.0.0'
 }

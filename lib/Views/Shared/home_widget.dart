@@ -60,6 +60,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                   MaterialPageRoute(
                                       builder: (context) => MealPage(
                                           id: meal.id,
+                                          name: meal.name,
                                           category: meal.category)));
                             },
                             child: MealCard(
@@ -152,6 +153,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                   MaterialPageRoute(
                                     builder: (context) => MealPage(
                                         id: meals[index].id,
+                                        name: meals[index].name,
                                         category: meals[index].category),
                                   ));
                             },

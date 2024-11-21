@@ -1,14 +1,17 @@
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ecommerce_app/Controllers/favorites_provider.dart';
 import 'package:ecommerce_app/Controllers/meals_provider.dart';
 import 'package:ecommerce_app/Models/language.dart';
+import 'package:ecommerce_app/Models/restaurantID.dart';
+import 'package:ecommerce_app/Services/helper.dart';
 import 'package:ecommerce_app/Views/Shared/appstyle.dart';
-import 'package:ecommerce_app/Views/Shared/reuseableText.dart';
+import 'package:ecommerce_app/Views/ui/editRestaurant.dart';
 import 'package:ecommerce_app/Views/ui/mainscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import '../Shared/home_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -21,17 +24,62 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   late TabController _tabController;
+  Helper helper = Helper();
+  late Restaurant _restaurant;
+
+  Future<void> showEditResDialog() async {
+    final locale = Localizations.localeOf(context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Localizations.override(
+            context: context,
+            locale: locale,
+            child: EditRestaurantPage(),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _loadData() async {
+    var restaurant = await helper.loadRestaurantData();
+    if (restaurant == null ||
+        restaurant.restaurantNameAR == '' ||
+        restaurant.restaurantNameEN == '' ||
+        restaurant.logo == "") {
+      showEditResDialog();
+    } else {
+      setState(() {
+        _restaurant = restaurant;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    _restaurant = Restaurant(
+      restaurantNameEN: '',
+      restaurantNameAR: '',
+      logo: '',
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) async {});
+    _loadData();
+  }
+
+  bool isTablet(BuildContext context) {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    return shortestSide >= 600; // Adjust the threshold as needed
   }
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
+
     var mealsProvider = Provider.of<MealNotifier>(context, listen: false);
-    // mealsProvider.getCategories(context);
+
     mealsProvider.getAllMeals(context);
     mealsProvider.getLastAddedMeals(context);
     var favoritesProvider = Provider.of<FavoritesNotifier>(context);
@@ -48,28 +96,49 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       image: AssetImage("android/assets/images/Asset 2.png"),
                       fit: BoxFit.fill)),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+            ListView(
               children: [
                 Container(
                   padding: EdgeInsets.only(left: 8.w, right: 5.w, bottom: 10.h),
                   width: MediaQuery.of(context).size.width,
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(top: 10.0.h),
+                        padding: EdgeInsets.only(top: 2.h),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            ReUseAbleText(
-                              text:
-                                  AppLocalizations.of(context)!.restaurantName,
-                              style: appstyleWithHt(
-                                  25, Colors.white, FontWeight.bold, 1.5),
-                            ),
+                            _restaurant.logo != ""
+                                ? CachedNetworkImage(
+                                    imageUrl: _restaurant
+                                        .logo, // URL from Firebase Storage
+                                    height: MediaQuery.of(context).size.height *
+                                        0.16,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.29,
+                                    fit: BoxFit.cover,
+                                    placeholder: (context, url) => const Center(
+                                      child: SizedBox(
+                                        width: 20, // Custom width
+                                        height: 20, // Custom height
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white, // Custom color
+                                          strokeWidth: 4, // Custom stroke width
+                                        ),
+                                      ),
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                  )
+                                : const SizedBox(),
                             Padding(
-                              padding: const EdgeInsets.only(right: 16.0),
+                              padding: _restaurant.logo != ""
+                                  ? const EdgeInsets.only(
+                                      right: 10.0, top: 25.0)
+                                  : const EdgeInsets.only(right: 10.0),
                               child: DropdownButton(
                                   underline: const SizedBox(),
                                   icon: const Icon(
@@ -108,14 +177,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      ReUseAbleText(
-                        text: AppLocalizations.of(context)!.slogan,
-                        style: appstyleWithHt(
-                            23, Colors.white, FontWeight.bold, 1.2),
-                      ),
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.01,
-                      ),
                     ],
                   ),
                 ),
@@ -123,8 +184,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   future: mealsProvider.categories,
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator(
-                        color: Colors.white,
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
                       );
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
@@ -134,8 +197,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       _tabController =
                           TabController(length: categories.length, vsync: this);
 
-                      List<Widget> homeWidgets = 
-                      categories.asMap().entries.map<Widget>((entry) {
+                      List<Widget> homeWidgets =
+                          categories.asMap().entries.map<Widget>((entry) {
                         int index = entry.key;
                         String category = entry.value;
                         return HomeWidget(
@@ -156,7 +219,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             isScrollable: true,
                             labelColor: Colors.white,
                             labelStyle:
-                                appstyle(24, Colors.white, FontWeight.bold),
+                                appstyle(isTablet(context)?20:24, Colors.white, FontWeight.bold),
                             unselectedLabelColor: Colors.grey.withOpacity(0.3),
                             tabs: [
                               for (var cat
@@ -164,7 +227,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 Tab(
                                   text: cat,
                                   height:
-                                      MediaQuery.of(context).size.height * 0.1,
+                                      MediaQuery.of(context).size.height * 0.07,
                                 ),
                             ],
                           ),
@@ -175,9 +238,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                             child: TabBarView(
                               controller: _tabController,
                               children:
-                              // homeWidgets
-                                [
-                                for (var index = 0; index < categories.length; index++)
+                                  // homeWidgets
+                                  [
+                                for (var index = 0;
+                                    index < categories.length;
+                                    index++)
                                   HomeWidget(
                                     mealCategory: categories[index],
                                     tabIndex: index,

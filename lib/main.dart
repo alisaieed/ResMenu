@@ -6,12 +6,14 @@ import 'package:ecommerce_app/Controllers/orders_provider.dart';
 import 'package:ecommerce_app/Controllers/search_provider.dart';
 import 'package:ecommerce_app/Views/ui/mainscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 Future<void> main() async {
@@ -41,6 +43,16 @@ Future<void> main() async {
         splitScreenMode: true,
         builder: (context, child) {
           return const MaterialApp(
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: [
+              Locale('en', ''),
+              Locale('ar', ''),
+            ],
             home: MainScreen(),
           );
         },

@@ -51,10 +51,8 @@ class _OrdersPageState extends State<OrdersPage> {
           children: [
             Center(
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width*0.29,
-                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: ElevatedButton(
@@ -186,12 +184,12 @@ class _OrdersPageState extends State<OrdersPage> {
                                                               ReUseAbleText(
                                                                 text: data.status,
                                                                 style: (data.status == "New" || data.status == "جديد")?
-                                                                appstyle(14, Colors.red.shade300, FontWeight.w600)
+                                                                appstyle(12, Colors.red.shade300, FontWeight.w600)
                                                                 : (data.status == "Cooking" || data.status == "قيد الطبخ")?
-                                                                appstyle(14, Colors.deepOrangeAccent, FontWeight.w600)
+                                                                appstyle(12, Colors.deepOrangeAccent, FontWeight.w600)
                                                                     : (data.status == "Done Cooking" || data.status == "انتهى الطبخ")?
-                                                                appstyle(14, Colors.orange.shade300, FontWeight.w600) :
-                                                                appstyle(14, Colors.green.shade300, FontWeight.w600)
+                                                                appstyle(12, Colors.orange.shade300, FontWeight.w600) :
+                                                                appstyle(12, Colors.green.shade300, FontWeight.w600)
                                                                 ,),
                                                             ],
                                                           ),

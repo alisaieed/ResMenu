@@ -16,7 +16,7 @@ class FireStoreHelper {
 
   Future<Map<String, dynamic>?> getMealData(
       String category, String docID, Locale locale) async {
-    if (locale.languageCode == 'en'){
+    if (locale.languageCode == 'en') {
       try {
         DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
             .collection('Meals_en')
@@ -35,7 +35,7 @@ class FireStoreHelper {
         print('Error fetching document data: $e');
         return null;
       }
-    }else{
+    } else {
       try {
         DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
             .collection('Meals_ar')
@@ -55,96 +55,36 @@ class FireStoreHelper {
         return null;
       }
     }
-
   }
 
-  Future<void> deleteCategory(
-      BuildContext context, String category) async {
-    try {
-      await FirebaseFirestore.instance.collection('Meals_en').doc(category).delete();
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text(
-                'Category "$category" and its meals has been deleted successfully!'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Failed to delete category and it meals.'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+  Future<void> deleteCategory(BuildContext context, String category) async {
+    Locale locale = Localizations.localeOf(context);
+    if(locale.languageCode == 'en'){
+      await FirebaseFirestore.instance
+          .collection('Meals_en')
+          .doc(category)
+          .delete();
+    }else {
+      await FirebaseFirestore.instance
+          .collection('Meals_ar')
+          .doc(category)
+          .delete();
     }
   }
 
   Future<void> addCategoryWithMealsCollection(
       BuildContext context, String category) async {
-    try {
-      await FirebaseFirestore.instance.collection('Meals_en').doc(category).set({});
-
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text(
-                'Category "$category" and its Meals collection added successfully!'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Failed to add category and Meals collection: $e'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    Locale locale = Localizations.localeOf(context);
+    if (locale.languageCode == 'en') {
+      await FirebaseFirestore.instance
+          .collection('Meals_en')
+          .doc(category)
+          .set({});
+    } else {
+      await FirebaseFirestore.instance
+          .collection('Meals_ar')
+          .doc(category)
+          .set({});
     }
   }
 
@@ -152,99 +92,19 @@ class FireStoreHelper {
       String category, String docID, BuildContext context) async {
     Locale locale = Localizations.localeOf(context);
     if (locale.languageCode == 'en') {
-      try {
-        await FirebaseFirestore.instance
-            .collection('Meals_en')
-            .doc(category)
-            .collection('Meals')
-            .doc(docID)
-            .delete();
-        print('Document deleted successfully!');
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Success'),
-              content: const Text('Meal has been deleted successfully.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      } catch (e) {
-        print('Error deleting document: $e');
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Failed'),
-              content:
-                  const Text('Failed to delete a meal\nPlease try again later'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
+      await FirebaseFirestore.instance
+          .collection('Meals_en')
+          .doc(category)
+          .collection('Meals')
+          .doc(docID)
+          .delete();
     } else {
-      try {
-        await FirebaseFirestore.instance
-            .collection('Meals_ar')
-            .doc(category)
-            .collection('Meals')
-            .doc(docID)
-            .delete();
-        print('Document deleted successfully!');
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Success'),
-              content: const Text('Meal has been deleted successfully.'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      } catch (e) {
-        print('Error deleting document: $e');
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Failed'),
-              content:
-                  const Text('Failed to delete a meal\nPlease try again later'),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      }
+      await FirebaseFirestore.instance
+          .collection('Meals_ar')
+          .doc(category)
+          .collection('Meals')
+          .doc(docID)
+          .delete();
     }
   }
 
@@ -261,7 +121,6 @@ class FireStoreHelper {
       ...order.toJson(),
       'timestamp': FieldValue.serverTimestamp(),
     }).then((value) {
-      print("Order Added");
       sendMessageTopic("New Order", "A new order has been added", "orders");
     }).catchError((error) => print("Failed to add order: $error"));
   }
@@ -272,95 +131,53 @@ class FireStoreHelper {
     }).catchError((error) => print("Failed to delete order: $error"));
   }
 
-
   Future<void> editMeal(
-      BuildContext context,
-      String langCode,
-      String category,
-      String mealId,
-      String name,
-      String title,
-      String description,
-      List<String> imageUrl,
-      List<String> options,
-      List<String> components,
-      String price,
-      ) async {
-    try {
-      if (langCode == "en") {
-        await fireStore
-            .collection('Meals_en')
-            .doc(category)
-            .collection('Meals')
-            .doc(mealId)
-            .set({
-          'name': name,
-          'id': mealId,
-          'title': title,
-          'category': category,
-          'description': description,
-          'imageUrl': imageUrl,
-          'options': options,
-          'components': components,
-          'price': price,
-        });
-      } else {
-        await fireStore
-            .collection('Meals_ar')
-            .doc(category)
-            .collection('Meals')
-            .doc(mealId)
-            .set({
-          'name': name,
-          'id': mealId,
-          'title': title,
-          'category': category,
-          'description': description,
-          'imageUrl': imageUrl,
-          'options': options,
-          'components': components,
-          'price': price,
-        });
-      }
-
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text('Meal edited successfully!'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) => const SettingsPage()));
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Failed to edit meal: $e'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    BuildContext context,
+    String langCode,
+    String category,
+    String mealId,
+    String name,
+    String title,
+    String description,
+    List<String> imageUrl,
+    List<String> options,
+    List<String> components,
+    String price,
+  ) async {
+    if (langCode == "en") {
+      await fireStore
+          .collection('Meals_en')
+          .doc(category)
+          .collection('Meals')
+          .doc(mealId)
+          .set({
+        'name': name,
+        'id': mealId,
+        'title': title,
+        'category': category,
+        'description': description,
+        'imageUrl': imageUrl,
+        'options': options,
+        'components': components,
+        'price': price,
+      });
+    } else {
+      await fireStore
+          .collection('Meals_ar')
+          .doc(category)
+          .collection('Meals')
+          .doc(mealId)
+          .set({
+        'name': name,
+        'id': mealId,
+        'title': title,
+        'category': category,
+        'description': description,
+        'imageUrl': imageUrl,
+        'options': options,
+        'components': components,
+        'price': price,
+      });
     }
   }
 
@@ -377,81 +194,40 @@ class FireStoreHelper {
     List<String> components,
     String price,
   ) async {
-    try {
-      if (langCode == "en") {
-        await fireStore
-            .collection('Meals_en')
-            .doc(category)
-            .collection('Meals')
-            .doc(mealId)
-            .set({
-          'name': name,
-          'id': mealId,
-          'title': title,
-          'category': category,
-          'description': description,
-          'imageUrl': imageUrl,
-          'options': options,
-          'components': components,
-          'price': price,
-        });
-      } else {
-        await fireStore
-            .collection('Meals_ar')
-            .doc(category)
-            .collection('Meals')
-            .doc(mealId)
-            .set({
-          'name': name,
-          'id': mealId,
-          'title': title,
-          'category': category,
-          'description': description,
-          'imageUrl': imageUrl,
-          'options': options,
-          'components': components,
-          'price': price,
-        });
-      }
-
-      // Show success dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Success'),
-            content: Text('Meal added successfully!'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (BuildContext context) => const SettingsPage()));
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      // Show error dialog
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text('Failed to add meal: $e'),
-            actions: <Widget>[
-              TextButton(
-                child: Text('OK'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        },
-      );
+    if (langCode == "en") {
+      await fireStore
+          .collection('Meals_en')
+          .doc(category)
+          .collection('Meals')
+          .doc(mealId)
+          .set({
+        'name': name,
+        'id': mealId,
+        'title': title,
+        'category': category,
+        'description': description,
+        'imageUrl': imageUrl,
+        'options': options,
+        'components': components,
+        'price': price,
+      });
+    } else {
+      await fireStore
+          .collection('Meals_ar')
+          .doc(category)
+          .collection('Meals')
+          .doc(mealId)
+          .set({
+        'name': name,
+        'id': mealId,
+        'title': title,
+        'category': category,
+        'description': description,
+        'imageUrl': imageUrl,
+        'options': options,
+        'components': components,
+        'price': price,
+      });
     }
   }
 

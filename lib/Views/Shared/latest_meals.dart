@@ -12,38 +12,44 @@ class LatestMeals extends StatelessWidget {
 
   final List<Meals> _category;
 
+  bool isTablet(BuildContext context) {
+    final shortestSide = MediaQuery.of(context).size.shortestSide;
+    return shortestSide >= 600;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return  StaggeredGridView.countBuilder(
-              padding: EdgeInsets.zero,
-              crossAxisCount: 2,
-              crossAxisSpacing: 7,
-              mainAxisSpacing: 5,
-              itemCount: _category.length,
-              scrollDirection: Axis.vertical,
-              staggeredTileBuilder: (index) => StaggeredTile.extent(
-                  (index % 2 ==0)? 1:1 , (index % 4 == 1 || index % 4 == 3)
-                  ?MediaQuery.of(context).size.height*0.45
-                  :MediaQuery.of(context).size.height*0.42),
-              itemBuilder: (context, index) {
-                final meal = _category[index];
+    return MasonryGridView.count(
+      padding: EdgeInsets.zero,
+      crossAxisCount: isTablet(context) ? 3 : 2,
+      crossAxisSpacing: 10,
+      mainAxisSpacing: 5,
+      itemCount: _category.length,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, index) {
+        final meal = _category[index];
 
-                return  GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context)=>
-                                MealPage(id: meal.id, category: meal.category)));
-                  },
-                  child: 
-                  StaggerTile(
-                      imageUrl: meal.imageUrl[0],
-                      components: meal.components.join(', ').toString(),
-                      name: meal.name,
-                      price: "\$${meal.price}"),
-                );
-              }
-          );
-        }
-      }
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MealPage(
+                  id: meal.id,
+                  name: meal.name,
+                  category: meal.category,
+                ),
+              ),
+            );
+          },
+          child: StaggerTile(
+            imageUrl: meal.imageUrl[0],
+            components: meal.components.join(', ').toString(),
+            name: meal.name,
+            price: "\$${meal.price}",
+          ),
+        );
+      },
+    );
+  }
+}

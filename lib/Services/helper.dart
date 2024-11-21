@@ -1,18 +1,84 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart' hide Order;
 import 'package:ecommerce_app/Models/meal_model.dart';
 import 'package:flutter/services.dart' as the_bundle;
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import '../Controllers/firebase_messaging.dart';
 import '../Models/order_model.dart';
+import '../Models/restaurantID.dart';
 
 class Helper {
+  Future<Restaurant?> loadRestaurantData() async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      final docSnapshot = await firestore
+          .collection('restaurantData')
+          .doc('restaurantInfo')
+          .get();
+
+      if (docSnapshot.exists) {
+        // Deserialize JSON data to a Restaurant object
+        return Restaurant.fromJson(docSnapshot.data()!);
+      } else {
+        print("No restaurant data found.");
+        return null;
+      }
+    } catch (e) {
+      print("Failed to retrieve restaurant data: $e");
+      return null;
+    }
+  }
+
+  Future<void> clearRestaurantData() async {
+    final restaurantDocRef = FirebaseFirestore.instance
+        .collection('restaurantData')
+        .doc('restaurantInfo');
+
+    try {
+      await restaurantDocRef.update({
+        'restaurantNameEN': FieldValue.delete(),
+        'restaurantNameAR': FieldValue.delete(),
+        'logo': FieldValue.delete(),
+      });
+
+      print('Restaurant data cleared successfully.');
+    } catch (e) {
+      print('Error clearing restaurant data: $e');
+    }
+  }
+
+  // Future<void> clearRestaurantData() async {
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final path = '${directory.path}/restaurant_data.json';
+  //
+  //   final file = File(path);
+  //   await file.writeAsString('');
+  // }
+
+  Future<void> saveRestaurantData(Restaurant restaurant) async {
+    final Map<String, dynamic> jsonData = restaurant.toJson();
+
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      await firestore
+          .collection('restaurantData')
+          .doc('restaurantInfo')
+          .set(jsonData);
+      print("Restaurant data saved successfully in Firestore.");
+    } catch (e) {
+      print("Failed to save restaurant data: $e");
+    }
+  }
 
   Future<int> mealIdGenerate(String category, Locale langCode) async {
-    if (langCode.toString() == 'en'){
+    if (langCode.toString() == 'en') {
       try {
         CollectionReference mealsCollection = FirebaseFirestore.instance
             .collection('Meals_en')
@@ -21,7 +87,7 @@ class Helper {
 
         QuerySnapshot snapshot = await mealsCollection.get();
 
-        return snapshot.docs.length+1;
+        return snapshot.docs.length + 1;
       } catch (e) {
         print("Error fetching document count: $e");
         return 0;
@@ -37,7 +103,7 @@ class Helper {
         QuerySnapshot snapshot = await mealsCollection.get();
 
         // Return the count of documents
-        return snapshot.docs.length+1;
+        return snapshot.docs.length + 1;
       } catch (e) {
         print("Error fetching document count: $e");
         return 0;
@@ -46,7 +112,8 @@ class Helper {
   }
 
   Future<List<Order>> getOrdersOnline() async {
-    final response = await http.get(Uri.parse("https://api.jsonstorage.net/v1/json/364f3b43-bdf4-4f5b-ba0d-2b5f53556929/3aa36377-36a9-4cc1-b59e-f38bd3b39e5c"));
+    final response = await http.get(Uri.parse(
+        "https://api.jsonstorage.net/v1/json/364f3b43-bdf4-4f5b-ba0d-2b5f53556929/3aa36377-36a9-4cc1-b59e-f38bd3b39e5c"));
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body) as List;
@@ -59,13 +126,14 @@ class Helper {
 
   Future<void> deleteOrderOnline(Order order) async {
     final orders = await getOrdersOnline();
-    for (int i = 0 ; i < orders.length; i++){
+    for (int i = 0; i < orders.length; i++) {
       if (orders[i].id == order.id) {
         orders.remove(orders[i]);
       }
     }
     final response = await http.put(
-      Uri.parse("https://api.jsonstorage.net/v1/json/364f3b43-bdf4-4f5b-ba0d-2b5f53556929/3aa36377-36a9-4cc1-b59e-f38bd3b39e5c?apiKey=571ed32c-22cc-461e-80af-3fc719225e08"),
+      Uri.parse(
+          "https://api.jsonstorage.net/v1/json/364f3b43-bdf4-4f5b-ba0d-2b5f53556929/3aa36377-36a9-4cc1-b59e-f38bd3b39e5c?apiKey=571ed32c-22cc-461e-80af-3fc719225e08"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -74,14 +142,14 @@ class Helper {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete order');
-    }else {
+    } else {
       print("Order Deleted Successfully");
     }
   }
 
   Future<void> addOrderOnline(Order order) async {
     final orders = await getOrdersOnline();
-    for (int i = 0 ; i < orders.length; i++){
+    for (int i = 0; i < orders.length; i++) {
       if (orders[i].id == order.id) {
         orders.remove(orders[i]);
       }
@@ -89,7 +157,8 @@ class Helper {
     orders.add(order);
 
     final response = await http.put(
-      Uri.parse("https://api.jsonstorage.net/v1/json/364f3b43-bdf4-4f5b-ba0d-2b5f53556929/3aa36377-36a9-4cc1-b59e-f38bd3b39e5c?apiKey=571ed32c-22cc-461e-80af-3fc719225e08"),
+      Uri.parse(
+          "https://api.jsonstorage.net/v1/json/364f3b43-bdf4-4f5b-ba0d-2b5f53556929/3aa36377-36a9-4cc1-b59e-f38bd3b39e5c?apiKey=571ed32c-22cc-461e-80af-3fc719225e08"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -98,7 +167,7 @@ class Helper {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to add order');
-    }else {
+    } else {
       print("Order Added Successfully");
       sendMessageTopic("New Order", "A new order has been added", "orders");
       print(response.body);

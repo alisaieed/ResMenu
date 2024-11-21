@@ -29,7 +29,6 @@ class MealNotifier extends ChangeNotifier{
 
     categories = FireStoreHelper().getAllCategories(context);
     categoriesList = await categories;
-    print(categoriesList);
 
   }
 
